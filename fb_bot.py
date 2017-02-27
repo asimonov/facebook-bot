@@ -54,7 +54,8 @@ class FbBot():
                 self.driver.refresh()
                 time.sleep(3600)
 
-    def automate_likes(self):
+    def automate_likes(self, URL):
+        self.driver.get(URL)
         for i in range(10):
 
             time.sleep(5)
@@ -78,10 +79,10 @@ class FbBot():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--a", help="status or likes?")
+    parser.add_argument('--a', help="status or likes?")
     parser.add_argument('--u', help="Username")
     parser.add_argument('--p', help="Password")
-    parser.add_argument('--as', help="Password")
+    parser.add_argument('--url', help="User/Group URL to perform like")
 
     args = parser.parse_args()
 
@@ -95,16 +96,23 @@ def main():
     try:
 
         driver = webdriver.Chrome()
-        driver.get("http://www.facebook.com/")
+        driver.get("https://www.facebook.com/")
 
         f = FbBot(driver, args.u, args.p)
         driver.implicitly_wait(50)
 
         if args.a == "status":
+            if args.url:
+                pass
             f.automate_status()
 
         if args.a == "likes":
-            f.automate_likes()
+            if args.url:
+                url = args.url
+                f.automate_likes(url)
+            else:
+                url = "https://www.facebook.com/"
+                f.automate_likes(url)
 
         print("Thanks for using!!!")
 

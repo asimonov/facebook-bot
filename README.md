@@ -1,11 +1,17 @@
 <h3>Python Facebook Bot</h3>
 A basic python facebook-bot that can automate your likes and update status as desired interval of time. All you need to feed the data to the bot for the status in quote.txt file. The bot only needs your FB username and password for automation. No Api key is required.
 
+<h3>Requirements</h3>
+<ul>
+<li>It requires Python 3.x, Selenium, Chrome Driver to work smoothly</li>
+</ul>
+
 <h3>How to use</h3>
 <ul>
 <li>Pass --a= paramter to define that what you want to automate (status or likes) </li>
 <li>Pass --u= paramter to define your facebook username </li>
 <li>Pass --p= paramter to define your facebook password </li>
+<li>Pass --url= parameter to metion your friend profile/Group URL to automate likes on <i>It is Optional. If not specified then it will automate likes on your News Feed</i></li>
 <li>It is like "python fb_bot.py --a=status --u=username --p=password</li>
 <li>When you update the quote.txt file for the data, then make sure that one status should be in one single line and likewise.
 </ul>
@@ -13,7 +19,7 @@ A basic python facebook-bot that can automate your likes and update status as de
 <h3>Usage</h3>
 <ul>
 <li>For status, it will update single status per hour.</li>
-<li>For Likes, it will perform single like per half hour</li>
+<li>For Likes, it will perform single like every half hour</li>
 </ul>
 
 <b><i>Yet, it is in beta version. Feedback and contribution is welcomed</i></b>
