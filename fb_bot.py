@@ -12,6 +12,7 @@ import selenium
 from selenium import webdriver
 from pyvirtualdisplay import Display
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
 import argparse
 import time
 
@@ -37,9 +38,10 @@ class FbBot():
             self.driver.quit()
         else:
             print("Login Successful")
+        self.thanks_like()
 
-    def automate_status(self):
-
+    def automate_status(self, URL):
+        self.driver.get(URL)
         with open('quote.txt', 'r') as f:
             get_line = sum(1 for line in open('quote.txt'))
 
@@ -76,6 +78,46 @@ class FbBot():
                 print("Already Liked")
             time.sleep(1800)
 
+    def thanks_like(self):
+        count = 0
+        profile = self.driver.find_element_by_css_selector('a._2s25')
+        time.sleep(5)
+        profile.click()
+        time.sleep(2)
+
+        profile = self.driver.find_element_by_id('fb-timeline-cover-name').text
+        fb_name = profile.split('\n')[0]
+
+        if self.driver.find_element_by_css_selector('.UFIRow.UFILikeSentence._4204._4_dr') or self.driver.find_element_by_css_selector('UFIRow UFIUnseenItem UFILikeSentence _4204 _4_dr'):
+            try:
+                if self.driver.find_element_by_css_selector('.UFIPagerLink'):
+                    time.sleep(1)
+                    ActionChains(self.driver).move_to_element(self.driver.find_element_by_css_selector('.UFIPagerLink')).click().perform()
+                    time.sleep(1)
+            except:
+                pass
+
+            for j in range(len(self.driver.find_elements_by_css_selector('.UFICommentActorName'))):
+                if fb_name == self.driver.find_elements_by_css_selector('.UFICommentActorName')[j].text:
+                    count += 1
+
+            if count == 0:
+                profile = self.driver.find_element_by_css_selector(".UFIAddCommentInput")
+                ActionChains(self.driver).move_to_element(profile).click().perform()
+
+                time.sleep(1)
+                profile = self.driver.switch_to.active_element
+
+                time.sleep(1)
+                profile.send_keys("Thanks for likes")
+                time.sleep(3)
+                profile.send_keys(Keys.ENTER)
+                print("Posted...")
+                time.sleep(1)
+
+        else:
+            print("Error")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -99,12 +141,13 @@ def main():
         driver.get("https://www.facebook.com/")
 
         f = FbBot(driver, args.u, args.p)
-        driver.implicitly_wait(50)
+        driver.implicitly_wait(100)
 
         if args.a == "status":
             if args.url:
                 pass
-            f.automate_status()
+            url = "https://www.facebook.com/"
+            f.automate_status(url)
 
         if args.a == "likes":
             if args.url:
@@ -121,7 +164,6 @@ def main():
 
     except:
         exit("Invalid parameter\nIt should be status or likes")
-
 
 if __name__ == "__main__":
     main()
