@@ -15,6 +15,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 import argparse
 import time
+import random
 
 # Uncomment this for invisible browser
 # display = Display(visible=0)
@@ -38,23 +39,42 @@ class FbBot():
             self.driver.quit()
         else:
             print("Login Successful")
-        self.thanks_like()
+        #self.thanks_like()
+
+        filename = 'quote.txt'
+        with open(filename, 'r', encoding='ISO-8859-1') as f:
+            self.quotes = f.read().splitlines()
+        random.shuffle(self.quotes)
 
     def automate_status(self, URL):
-        self.driver.get(URL)
-        with open('quote.txt', 'r') as f:
-            get_line = sum(1 for line in open('quote.txt'))
-
-            for i in range(get_line):
-                read_line = f.readline()
-                login = self.driver.find_element_by_name("xhpc_message")
-                login.send_keys(read_line)
-                self.driver.implicitly_wait(50)
-                login = self.driver.find_element_by_css_selector("._1mf7")
-                login.click()
-                time.sleep(5)
-                self.driver.refresh()
-                time.sleep(3600)
+        for i in range(len(self.quotes)):
+            # random like
+            self.driver.get(URL)
+            time.sleep(5)
+            get_like_status = self.driver.find_elements_by_css_selector(".UFILikeLink")[0].get_attribute("aria-pressed")
+            time.sleep(1)
+            if get_like_status == 'false':
+                get_like_bt = self.driver.find_elements_by_partial_link_text("Like")
+                time.sleep(2)
+                #get_like_bt[i].click()
+                ActionChains(self.driver).move_to_element(get_like_bt[0]).click().perform();
+                if get_like_bt:
+                    print("Done")
+                else:
+                    print("Not done")
+                time.sleep(3)
+            else:
+                print("Already Liked")
+            # random quote
+            self.driver.get(URL)
+            login = self.driver.find_element_by_name("xhpc_message")
+            login.send_keys(self.quotes[i])
+            self.driver.implicitly_wait(50)
+            login = self.driver.find_element_by_css_selector("._1mf7")
+            ActionChains(self.driver).move_to_element(login).click().perform();
+            time.sleep(5)
+            self.driver.refresh()
+            time.sleep(3600+random.randint(0,2*3600))
 
     def automate_likes(self, URL):
         self.driver.get(URL)
@@ -137,7 +157,7 @@ def main():
 
     try:
 
-        driver = webdriver.Chrome()
+        driver = webdriver.Chrome('/Users/alexeysimonov/dev/python/facebook-bot/chromedriver')
         driver.get("https://www.facebook.com/")
 
         f = FbBot(driver, args.u, args.p)
@@ -162,8 +182,9 @@ def main():
     except KeyboardInterrupt:
         exit("User Aborted")
 
-    except:
-        exit("Invalid parameter\nIt should be status or likes")
+#    except:
+#        input("press enter")
+#        exit("Invalid parameter\nIt should be status or likes")
 
 if __name__ == "__main__":
     main()
